@@ -31,13 +31,6 @@ public class BoardController : MonoBehaviour
     void Start()
     {
         ClearAll();
-        for (int y = 0; y < BOARD_HEIGHT; y++)
-        {
-            for (int x = 0; x <= BOARD_WIDTH; x++)
-            {
-                Settle(new Vector2Int(x, y), Random.Range(1, 7));
-            }
-        }
     }
 
 

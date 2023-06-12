@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    const float TRANS_TIME = 0.05f;
-    const float ROT_TIME = 0.05f;
+    const int TRANS_TIME = 3;
+    const int ROT_TIME = 3;
+
+    const int FALL_COUNT_UNIT = 120;
+    const int FALL_COUNT_SPD = 10;
+    const int FALL_COUNT_FAST_SPD = 20;
     enum RotState
     {
         Up = 0,
@@ -25,6 +29,10 @@ public class PlayerController : MonoBehaviour
     AnimationController _animationController = new AnimationController();
     Vector2Int _last_position;
     RotState _last_rotate = RotState.Up;
+
+    LogicalInput logicalInput = new();
+
+    int _fallCount = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -48,8 +56,6 @@ public class PlayerController : MonoBehaviour
     {
         return pos + rotate_tbl[(int)rot];
     }
-
-
     private bool CanMove(Vector2Int pos, RotState rot)
     {
         if (!boardController.CanSettle(pos)) return false;
@@ -58,7 +64,7 @@ public class PlayerController : MonoBehaviour
         return true;
     }
 
-    void SetTransition(Vector2Int pos, RotState rot, float time)
+    void SetTransition(Vector2Int pos, RotState rot, int time)
     {
         _last_position = _position;
         _last_rotate = _rotate;
@@ -135,40 +141,79 @@ public class PlayerController : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    void Control()
+    static readonly KeyCode[] key_code_tbl = new KeyCode[(int)LogicalInput.Key.MAX]
+{
+        KeyCode.RightArrow,
+        KeyCode.LeftArrow,
+        KeyCode.X,
+        KeyCode.Z,
+        KeyCode.UpArrow,
+        KeyCode.DownArrow,
+};
+
+    void UpdateInput()
     {
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        LogicalInput.Key inputDev = 0;
+
+        for (int i = 0; i < (int)LogicalInput.Key.MAX; i++)
         {
-            Translate(true);
-        }
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            Translate(false);
-        }
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            Rotate(true);
-        }
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            Rotate(false);
+            if (Input.GetKey(key_code_tbl[i]))
+            {
+                inputDev |= (LogicalInput.Key)(1 << i);
+            }
         }
 
-        if (Input.GetKey(KeyCode.UpArrow))
+        logicalInput.Update(inputDev);
+    }
+
+    bool Fall(bool is_fast)
+    {
+
+
+
+
+
+
+
+
+
+
+    }
+    void Control()
+    {
+        if (!Fall(logicalInput.IsRaw(LogicalInput.Key.Down))) return;
+        if (_animationController.Update()) return;
+        if (logicalInput.IsRepeat(LogicalInput.Key.Right))
+        {
+            if(Translate(true)) return;
+        }
+        if (logicalInput.IsRepeat(LogicalInput.Key.Left))
+        {
+            if (Translate(false)) return;
+        }
+        if (logicalInput.IsTrigger(LogicalInput.Key.RotR))
+        {
+            if(Rotate(true)) return;
+        }
+        if (logicalInput.IsTrigger(LogicalInput.Key.RotL))
+        {
+            if(Rotate(false)) return;
+        }
+
+        if (logicalInput.IsRelease(LogicalInput.Key.QuickDrop))
         {
             QuickDrop();
         }
     }
-    // Update is called once per frame
-    void Update()
+
+    void FixedUpdate()
     {
-        if (!_animationController.Update(Time.deltaTime))
-        {
-            Control();
-        }
+        UpdateInput();
+        Control();
+
         float anim_rate = _animationController.GetNormalized();
         _puyoControllers[0].SetPos(Interpolate(_position, RotState.Invalid, _last_position, RotState.Invalid, anim_rate));
-        _puyoControllers[1].SetPos(Interpolate(_position, _rotate, _last_position, _last_rotate, anim_rate));
+        _puyoControllers[1].SetPos(Interpolate(_position,_rotate,_last_position,_last_rotate,anim_rate));
     }
     static Vector3 Interpolate(Vector2Int pos, RotState rot, Vector2Int pos_last, RotState rot_last, float rate)
     {

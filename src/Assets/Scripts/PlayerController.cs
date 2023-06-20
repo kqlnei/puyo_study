@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour
     Vector2Int _last_position;
     RotState _last_rotate = RotState.Up;
 
-    LogicalInput _logicalInput = new();
+    LogicalInput _logicalInput = null;
 
     int _fallCount = 0;
     int _groundFrame = GROUND_FRAMES;

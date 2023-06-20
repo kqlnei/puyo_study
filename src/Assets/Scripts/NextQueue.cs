@@ -35,4 +35,13 @@ class NextQueue
 
         return next;
     }
+
+    public void Each(System.Action<int,Vector2Int> cb)
+    {
+        int idx = 0;
+        foreach (Vector2Int n in _nexts)
+        {
+            cb(idx++, n);
+        }
+    }
 }

@@ -125,7 +125,7 @@ public class PlayDirector : MonoBehaviour
     {
         public IState.E_State Initialize(PlayDirector parent)
         {
-            return parent._boardController.CheckFall() ? IState.E_State.Unchanged : IState.E_State.Control;
+            return parent._boardController.CheckErase() ? IState.E_State.Unchanged : IState.E_State.Control;
         }
         public IState.E_State Update(PlayDirector parent)
         {

@@ -31,6 +31,7 @@ public class BoardController : MonoBehaviour
     List<Vector2Int> _erases = new();
     int _eraseFrames = 0;
 
+    uint additiveScore =
     private void ClearAll()
     {
         for (int y = 0; y < BOARD_HEIGHT; y++)

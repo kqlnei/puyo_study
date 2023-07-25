@@ -133,7 +133,12 @@ public class PlayDirector : MonoBehaviour
     {
         public IState.E_State Initialize(PlayDirector parent)
         {
-            return parent._boardController.CheckErase() ? IState.E_State.Unchanged : IState.E_State.Control;
+            if(parent._boardController.CheckErase(parent._chainCount++))
+            {
+                return IState.E_State.Unchanged;
+            }
+            parent._chainCount = 0;
+            return IState.E_State.Control;
         }
         public IState.E_State Update(PlayDirector parent)
         {
